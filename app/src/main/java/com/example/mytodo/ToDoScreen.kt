@@ -17,6 +17,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -24,6 +26,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
@@ -75,13 +79,41 @@ fun ToDoScreen(
             LazyColumn(
             ) {
                 items(state.items) { item ->
-                    Text(
-                        text = item.content,
+
+
+                    Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(Color.LightGray)
                             .padding(8.dp)
-                    )
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            //todos content
+                            Text(
+                                text = item.content,
+                                Modifier.padding(16.dp),
+                                style = TextStyle(
+                                    textDecoration = if (item.isDone == true) {
+                                        TextDecoration.LineThrough
+                                    } else {
+                                        TextDecoration.None
+                                    }
+                                )
+                            )
+
+                            //done status
+                            Checkbox(
+                                checked = item.isDone,
+                                onCheckedChange = {
+                                    onAction(ToDoAction.MarkDone(item.uid))
+                                }
+                            )
+
+                        }
+                    }
 
                 }
             }
