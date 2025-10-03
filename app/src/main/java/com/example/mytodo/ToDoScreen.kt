@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -18,12 +19,19 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardElevation
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LargeTopAppBar
+import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -31,95 +39,116 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ToDoScreen(
     state: ToDoState, onAction: (ToDoAction) -> Unit, modifier: Modifier = Modifier
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Column(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Row(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .height(56.dp),
-            ) {
-                //text field for new toDos
-                OutlinedTextField(
-                    value = state.textInput,
-                    onValueChange = { text ->
-                        onAction(ToDoAction.SetText(text))
-                    },
-                    modifier = Modifier
-                        .weight(.2f)
-                )
-
-                //Add Button
-                Button(
-                    onClick = {
-                        onAction(ToDoAction.AddToDo)
-                    },
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .padding(start = 8.dp),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Add,
-                        contentDescription = "Add Button"
-                    )
+    Scaffold(
+        topBar = {
+            MediumTopAppBar(
+                title = {
+                    Text("Hello Vineet,")
                 }
-            }
+            )
+        }
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp)
+                .imePadding()
+        ) {
 
-            //List of todos
-            LazyColumn(
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(),
             ) {
-                items(state.items) { item ->
+
+                //List of todos
+                LazyColumn(
+                    modifier = Modifier
+                        .weight(.1f)
+                ) {
+                    items(state.items) { item ->
 
 
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp)
-                    ) {
-                        Row(
+                        Card(
                             modifier = Modifier
-                                .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                                .fillMaxWidth()
+                                .padding(8.dp),
                         ) {
-                            //todos content
-                            Text(
-                                text = item.content,
-                                Modifier.padding(16.dp),
-                                style = TextStyle(
-                                    textDecoration = if (item.isDone == true) {
-                                        TextDecoration.LineThrough
-                                    } else {
-                                        TextDecoration.None
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                //todos content
+                                Text(
+                                    text = item.content,
+                                    Modifier.padding(16.dp),
+                                    style = TextStyle(
+                                        textDecoration = if (item.isDone == true) {
+                                            TextDecoration.LineThrough
+                                        } else {
+                                            TextDecoration.None
+                                        }
+                                    )
+                                )
+
+                                //done status
+                                Checkbox(
+                                    checked = item.isDone,
+                                    onCheckedChange = {
+                                        onAction(ToDoAction.MarkDone(item.uid))
                                     }
                                 )
-                            )
 
-                            //done status
-                            Checkbox(
-                                checked = item.isDone,
-                                onCheckedChange = {
-                                    onAction(ToDoAction.MarkDone(item.uid))
-                                }
-                            )
-
+                            }
                         }
+
                     }
-
                 }
-            }
 
+                Row(
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .height(56.dp),
+                    verticalAlignment = Alignment.Bottom
+                ) {
+                    //text field for new toDos
+                    OutlinedTextField(
+                        value = state.textInput,
+                        onValueChange = { text ->
+                            onAction(ToDoAction.SetText(text))
+                        },
+                        modifier = Modifier
+                            .weight(.2f)
+                    )
+
+                    //Add Button
+                    Button(
+                        onClick = {
+                            onAction(ToDoAction.AddToDo)
+                        },
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .padding(start = 8.dp),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Add,
+                            contentDescription = "Add Button"
+                        )
+                    }
+                }
+
+            }
         }
     }
+
 }
 
 @Preview(showBackground = true)
